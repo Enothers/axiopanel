@@ -5,23 +5,19 @@ export interface Site {
 
   domain: string;
 
-  repository: string;
+  status: "online" | "offline";
 
-  framework: string;
+  ssl: boolean;
 
-  branch: string;
+  github?: string;
 
-  containerId?: string;
+  path: string;
 
-  databaseId?: string;
+  container: string;
 
-  redis?: boolean;
+  database?: string;
 
-  ssl?: boolean;
+  redis?: string;
 
-  status:
-    | "running"
-    | "building"
-    | "stopped"
-    | "error";
+  createdAt: string;
 }
