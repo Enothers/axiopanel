@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS sites (
 
     branch VARCHAR(255),
 
-    ssl BOOLEAN DEFAULT FALSE,
+    ssl_enabled BOOLEAN DEFAULT FALSE,
 
     status ENUM(
         'online',

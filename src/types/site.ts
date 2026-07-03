@@ -20,7 +20,7 @@ export interface Site {
     | "offline"
     | "building";
 
-  ssl: boolean;
+  ssl_enabled: boolean;
 
   github: string | null;
 

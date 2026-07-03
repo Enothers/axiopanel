@@ -10,7 +10,7 @@ interface CreateSiteInput {
   branch?: string;
   image?: string;
   port: string;
-  ssl: boolean;
+  ssl_enabled: boolean;
 }
 
 export async function createSite(
@@ -25,7 +25,7 @@ INSERT INTO sites
   type,
   github,
   branch,
-  ssl,
+  ssl_enabled
   status
 )
 VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -36,7 +36,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
       site.type,
       site.github ?? null,
       site.branch ?? null,
-      site.ssl,
+      site.ssl_enabled,
       "offline",
     ]
   );
@@ -49,7 +49,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
     branch: site.branch,
     image: site.image,
     port: site.port,
-    ssl: site.ssl,
+    ssl: site.ssl_enabled,
   });
 
   await query(

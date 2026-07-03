@@ -132,7 +132,7 @@ export function SitesTable() {
 
               <td className="px-6 py-5">
 
-                {site.ssl ? (
+                {site.ssl_enabled ? (
                   <Lock
                     size={18}
                     className="text-green-500"

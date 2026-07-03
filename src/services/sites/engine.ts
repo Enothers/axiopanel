@@ -22,7 +22,7 @@ export interface EngineSite {
   branch?: string;
   image?: string;
   port: string;
-  ssl: boolean;
+  ssl_enabled: boolean;
   env?: Record<string, string>;
 }
 
