@@ -50,15 +50,15 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
   );
 
   const result = await deploySite({
-    name: site.name,
-    domain: site.domain,
-    type: site.type,
-    github: site.github,
-    branch: site.branch,
-    image: site.image,
-    port: site.port,
-    ssl: sslEnabled,
-  });
+  name: site.name,
+  domain: site.domain,
+  type: site.type,
+  github: site.github,
+  branch: site.branch,
+  image: site.image,
+  port: site.port,
+  ssl_enabled: sslEnabled,
+});
 
   await query(
     `
