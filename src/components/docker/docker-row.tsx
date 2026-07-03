@@ -40,7 +40,7 @@ export function DockerRow({
       </td>
 
       <td className="px-5 py-4">
-        <DockerActions />
+        <DockerActions id={container.id} />
       </td>
 
     </tr>
