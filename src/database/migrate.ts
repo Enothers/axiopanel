@@ -38,18 +38,26 @@ export async function migrate() {
       continue;
     }
 
-    const sql = fs.readFileSync(
-      path.join(folder, file),
-      "utf8"
-    );
+    console.log(`➡️ Exécution de ${file}`);
 
-    await query(sql);
+    try {
+      const sql = fs.readFileSync(
+        path.join(folder, file),
+        "utf8"
+      );
 
-    await query(
-      "INSERT INTO migrations (migration) VALUES (?)",
-      [file]
-    );
+      await query(sql);
 
-    console.log("✅ Migration :", file);
+      await query(
+        "INSERT INTO migrations (migration) VALUES (?)",
+        [file]
+      );
+
+      console.log(`✅ ${file}`);
+    } catch (error) {
+      console.error(`❌ Erreur dans ${file}`);
+      console.error(error);
+      throw error;
+    }
   }
 }
