@@ -19,45 +19,55 @@ export async function createProxyHost(
   container: string,
   port: number
 ) {
-  const token = await login();
+  try {
+    const token = await login();
 
-  await axios.post(
-    `${API}/api/nginx/proxy-hosts`,
-    {
-      domain_names: [domain],
+    const { data } = await axios.post(
+      `${API}/api/nginx/proxy-hosts`,
+      {
+        domain_names: [domain],
 
-      forward_scheme: "http",
+        forward_scheme: "http",
 
-      forward_host: container,
+        forward_host: container,
 
-      forward_port: port,
+        forward_port: port,
 
-      access_list_id: 0,
+        access_list_id: 0,
 
-      certificate_id: "new",
+        certificate_id: "new",
 
-      ssl_forced: true,
+        ssl_forced: true,
 
-      http2_support: true,
+        http2_support: true,
 
-      hsts_enabled: true,
+        hsts_enabled: true,
 
-      websocket_support: true,
+        websocket_support: true,
 
-      block_exploits: true,
+        block_exploits: true,
 
-      caching_enabled: false,
+        caching_enabled: false,
 
-      meta: {
-        letsencrypt_agree: true,
-        letsencrypt_email:
-          process.env.NPM_EMAIL,
+        meta: {
+          letsencrypt_agree: true,
+          letsencrypt_email: process.env.NPM_EMAIL,
+        },
       },
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("✅ Proxy créé :", data);
+  } catch (error: any) {
+    console.error("❌ Erreur NPM");
+    console.error(
+      error.response?.data ?? error.message
+    );
+
+    throw error;
+  }
 }
