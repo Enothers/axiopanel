@@ -2,26 +2,20 @@ import { NextResponse } from "next/server";
 
 import { dockerService } from "@/services/docker/service";
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET() {
   try {
-    const { id } = await params;
+    const containers = await dockerService.getContainers();
 
-    const container =
-      await dockerService.getContainer(id);
-
-    return NextResponse.json(container);
+    return NextResponse.json(containers);
   } catch (error) {
     console.error(error);
 
     return NextResponse.json(
       {
-        error: "Container introuvable.",
+        error: "Impossible de récupérer les conteneurs.",
       },
       {
-        status: 404,
+        status: 500,
       }
     );
   }
