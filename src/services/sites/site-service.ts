@@ -10,12 +10,20 @@ interface CreateSiteInput {
   branch?: string;
   image?: string;
   port: string;
-  ssl_enabled: boolean;
+
+  // Le formulaire envoie encore "ssl"
+  ssl?: boolean;
+
+  // Nouveau nom en base
+  ssl_enabled?: boolean;
 }
 
 export async function createSite(
   site: CreateSiteInput
 ) {
+  const sslEnabled =
+    site.ssl_enabled ?? site.ssl ?? false;
+
   await query(
     `
 INSERT INTO sites
@@ -25,7 +33,7 @@ INSERT INTO sites
   type,
   github,
   branch,
-  ssl_enabled
+  ssl_enabled,
   status
 )
 VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -36,7 +44,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
       site.type,
       site.github ?? null,
       site.branch ?? null,
-      site.ssl_enabled,
+      sslEnabled,
       "offline",
     ]
   );
@@ -49,7 +57,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
     branch: site.branch,
     image: site.image,
     port: site.port,
-    ssl: site.ssl_enabled,
+    ssl: sslEnabled,
   });
 
   await query(
