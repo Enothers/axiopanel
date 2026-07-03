@@ -2,6 +2,11 @@ import type Docker from "dockerode";
 
 import { getDockerClient } from "./client";
 
+import { exec } from "child_process";
+import { promisify } from "util";
+
+const run = promisify(exec);
+
 import type {
   DockerContainer,
   DockerMount,
@@ -132,10 +137,72 @@ async getContainerStats(id: string) {
     };
   }
 
+    async buildCompose(folder: string) {
+    const { stdout } = await run(
+      "docker compose build --pull",
+      {
+        cwd: folder,
+      }
+    );
+
+    return stdout;
+  }
+
+  async startCompose(folder: string) {
+    const { stdout } = await run(
+      "docker compose up -d --force-recreate",
+      {
+        cwd: folder,
+      }
+    );
+
+    return stdout;
+  }
+
+  async stopCompose(folder: string) {
+    const { stdout } = await run(
+      "docker compose down",
+      {
+        cwd: folder,
+      }
+    );
+
+    return stdout;
+  }
+
+  async restartCompose(folder: string) {
+    await this.stopCompose(folder);
+
+    return this.startCompose(folder);
+  }
+
+  async deleteCompose(folder: string) {
+    const { stdout } = await run(
+      "docker compose down -v --remove-orphans",
+      {
+        cwd: folder,
+      }
+    );
+
+    return stdout;
+  }
+
+  async logsCompose(folder: string) {
+    const { stdout } = await run(
+      "docker compose logs --tail=500",
+      {
+        cwd: folder,
+      }
+    );
+
+    return stdout;
+  }
+
   async getContainers(): Promise<DockerContainer[]> {
     const containers = await this.docker.listContainers({
       all: true,
     });
+    
 
     return containers.map((container) => ({
       id: container.Id,

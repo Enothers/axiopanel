@@ -1,33 +1,48 @@
 import { NextResponse } from "next/server";
 
-import { getProxyHosts } from "@/services/npm/sites";
+import { query } from "@/lib/db";
+import { createSite } from "@/services/sites/site-service";
 
 export async function GET() {
-  const hosts = await getProxyHosts();
+  try {
+    const sites = await query(
+      "SELECT * FROM sites ORDER BY id DESC"
+    );
 
-  return NextResponse.json(
-    hosts.map((host: any) => ({
-      id: host.id.toString(),
+    return NextResponse.json(sites);
+  } catch (error) {
+    console.error(error);
 
-      name: host.domain_names[0],
+    return NextResponse.json(
+      {
+        error: "Impossible de récupérer les sites.",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}
 
-      domain: host.domain_names.join(", "),
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
 
-      status: "online",
+    await createSite(body);
 
-      ssl: host.certificate_id !== 0,
+    return NextResponse.json({
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
 
-      github: "",
-
-      path: "",
-
-      container: host.forward_host,
-
-      database: "",
-
-      redis: "",
-
-      createdAt: "",
-    }))
-  );
+    return NextResponse.json(
+      {
+        error: "Impossible de créer le site.",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
 }

@@ -1,7 +1,14 @@
+"use client";
+
+import { useState } from "react";
 import { Globe, Plus } from "lucide-react";
+
 import { SitesTable } from "@/components/sites/sites-table";
+import { CreateSiteDialog } from "@/components/sites/create-site-dialog";
 
 export default function SitesPage() {
+  const [open, setOpen] = useState(false);
+
   return (
     <div className="space-y-8">
 
@@ -28,32 +35,22 @@ export default function SitesPage() {
 
         </div>
 
-        <button className="flex items-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 font-medium transition hover:bg-blue-500">
-
+        <button
+          onClick={() => setOpen(true)}
+          className="flex items-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 font-medium transition hover:bg-blue-500"
+        >
           <Plus size={18} />
-
           Nouveau site
-
         </button>
 
       </div>
 
-      <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] py-24 text-center">
+      <SitesTable />
 
-        <Globe
-          className="mx-auto mb-6 text-neutral-500"
-          size={60}
-        />
-
-        <h2 className="text-2xl font-semibold">
-          <SitesTable />
-        </h2>
-
-        <p className="mt-2 text-neutral-500">
-          Créez votre premier site hébergé avec AxioPanel.
-        </p>
-
-      </div>
+      <CreateSiteDialog
+        open={open}
+        onClose={() => setOpen(false)}
+      />
 
     </div>
   );

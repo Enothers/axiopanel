@@ -17,6 +17,7 @@
     "date-fns": "^4.4.0",
     "dockerode": "^5.0.1",
     "framer-motion": "^12.42.2",
+    "glob": "^13.0.6",
     "lucide-react": "^1.23.0",
     "mariadb": "^3.5.3",
     "next": "16.2.10",

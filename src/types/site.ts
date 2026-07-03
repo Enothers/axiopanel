@@ -1,23 +1,34 @@
+export type SiteType =
+  | "nextjs"
+  | "node"
+  | "laravel"
+  | "php"
+  | "docker"
+  | "static";
+
 export interface Site {
-  id: string;
+  id: number;
 
   name: string;
 
   domain: string;
 
-  status: "online" | "offline";
+  type: SiteType;
+
+  status:
+    | "online"
+    | "offline"
+    | "building";
 
   ssl: boolean;
 
-  github?: string;
+  github: string | null;
 
-  path: string;
+  docker_container: string | null;
 
-  container: string;
+  docker_image: string | null;
 
-  database?: string;
+  branch: string | null;
 
-  redis?: string;
-
-  createdAt: string;
+  created_at: string;
 }
