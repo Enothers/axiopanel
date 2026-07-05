@@ -30,17 +30,24 @@ export async function createProxyHost(
       forward_port: port,
 
       access_list_id: 0,
-
       certificate_id: 0,
 
       ssl_forced: false,
-      http2_support: true,
+      http2_support: false,
       hsts_enabled: false,
-      websocket_support: true,
-      block_exploits: true,
-      caching_enabled: false,
+      hsts_subdomains: false,
 
-      enabled: true,
+      caching_enabled: false,
+      block_exploits: false,
+
+      allow_websocket_upgrade: false,
+      trust_forwarded_proto: false,
+
+      advanced_config: "",
+
+      locations: [],
+
+      meta: {},
     };
 
     console.log("🌐 Création Proxy Host");
@@ -57,6 +64,8 @@ export async function createProxyHost(
     );
 
     console.log("✅ Proxy créé :", data);
+
+    return data;
   } catch (error: any) {
     console.error("❌ Erreur NPM");
     console.error(
