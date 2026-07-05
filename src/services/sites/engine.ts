@@ -63,10 +63,7 @@ export async function deploySite(
     }
 
     if (site.env) {
-      await createEnvFile(
-        folder,
-        site.env
-      );
+      await createEnvFile(folder, site.env);
     }
 
     const port =
@@ -85,24 +82,53 @@ export async function deploySite(
       port,
     });
 
+    console.log("🔨 Build Docker...");
     logs += await dockerService.buildCompose(folder);
 
+    console.log("🚀 Démarrage du conteneur...");
     logs += await dockerService.startCompose(folder);
 
-    await createProxyHost(
-      site.domain,
-      site.name,
-      getInternalPort(projectType)
-    );
+    try {
+      console.log("🌐 Création du Proxy Host...");
+
+      await createProxyHost(
+        site.domain,
+        site.name,
+        getInternalPort(projectType)
+      );
+
+      console.log("✅ Proxy Host créé.");
+    } catch (error: any) {
+      console.error("❌ Impossible de créer le Proxy Host");
+      console.error(
+        error?.response?.data ??
+        error?.message ??
+        error
+      );
+
+      logs +=
+        "\n\n===== ERREUR NGINX PROXY MANAGER =====\n";
+
+      logs +=
+        JSON.stringify(
+          error?.response?.data ??
+          error?.message ??
+          error,
+          null,
+          2
+        ) + "\n";
+    }
 
     return {
       success: true,
       container: site.name,
       internalPort: getInternalPort(projectType),
-      externalPort: 0,
+      externalPort: Number(port),
       logs,
     };
   } catch (error: any) {
+    console.error(error);
+
     logs +=
       error?.stderr ??
       error?.stdout ??
