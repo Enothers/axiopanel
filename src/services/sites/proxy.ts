@@ -22,38 +22,33 @@ export async function createProxyHost(
   try {
     const token = await login();
 
+    const payload = {
+      domain_names: [domain],
+
+      forward_scheme: "http",
+      forward_host: container,
+      forward_port: port,
+
+      access_list_id: 0,
+
+      certificate_id: 0,
+
+      ssl_forced: false,
+      http2_support: true,
+      hsts_enabled: false,
+      websocket_support: true,
+      block_exploits: true,
+      caching_enabled: false,
+
+      enabled: true,
+    };
+
+    console.log("🌐 Création Proxy Host");
+    console.log(JSON.stringify(payload, null, 2));
+
     const { data } = await axios.post(
       `${API}/api/nginx/proxy-hosts`,
-      {
-        domain_names: [domain],
-
-        forward_scheme: "http",
-
-        forward_host: container,
-
-        forward_port: port,
-
-        access_list_id: 0,
-
-        certificate_id: "new",
-
-        ssl_forced: true,
-
-        http2_support: true,
-
-        hsts_enabled: true,
-
-        websocket_support: true,
-
-        block_exploits: true,
-
-        caching_enabled: false,
-
-        meta: {
-          letsencrypt_agree: true,
-          letsencrypt_email: process.env.NPM_EMAIL,
-        },
-      },
+      payload,
       {
         headers: {
           Authorization: `Bearer ${token}`,
