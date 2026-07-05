@@ -19,59 +19,107 @@ export async function createProxyHost(
   container: string,
   port: number
 ) {
-  try {
-    const token = await login();
+  const token = await login();
 
-    const payload = {
+  /*
+   * Création du Proxy Host
+   */
+
+  const { data: proxy } = await axios.post(
+    `${API}/api/nginx/proxy-hosts`,
+    {
       domain_names: [domain],
 
       forward_scheme: "http",
+
       forward_host: container,
+
       forward_port: port,
 
       access_list_id: 0,
+
       certificate_id: 0,
 
       ssl_forced: false,
-      http2_support: false,
-      hsts_enabled: false,
-      hsts_subdomains: false,
 
       caching_enabled: false,
-      block_exploits: false,
 
-      allow_websocket_upgrade: false,
-      trust_forwarded_proto: false,
+      block_exploits: false,
 
       advanced_config: "",
 
+      allow_websocket_upgrade: false,
+
+      http2_support: true,
+
+      enabled: true,
+
       locations: [],
 
-      meta: {},
-    };
+      hsts_enabled: false,
 
-    console.log("🌐 Création Proxy Host");
-    console.log(JSON.stringify(payload, null, 2));
+      hsts_subdomains: false,
 
-    const { data } = await axios.post(
-      `${API}/api/nginx/proxy-hosts`,
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+      trust_forwarded_proto: false,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
-    console.log("✅ Proxy créé :", data);
+  console.log("✅ Proxy créé");
 
-    return data;
-  } catch (error: any) {
-    console.error("❌ Erreur NPM");
-    console.error(
-      error.response?.data ?? error.message
-    );
+  /*
+   * Création du certificat
+   */
 
-    throw error;
-  }
+  const { data: certificate } = await axios.post(
+    `${API}/api/nginx/certificates`,
+    {
+      provider: "letsencrypt",
+
+      nice_name: domain,
+
+      domain_names: [domain],
+
+      meta: {
+        letsencrypt_agree: true,
+        letsencrypt_email:
+          process.env.LETSENCRYPT_EMAIL,
+      },
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  console.log("✅ Certificat créé");
+
+  /*
+   * Mise à jour du Proxy Host
+   */
+
+  await axios.put(
+    `${API}/api/nginx/proxy-hosts/${proxy.id}`,
+    {
+      ...proxy,
+
+      certificate_id: certificate.id,
+
+      ssl_forced: true,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  console.log("✅ SSL activé");
+
+  return proxy.id;
 }
